@@ -1,0 +1,25 @@
+{
+  "name": "@vjcspy/g-app",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=8.9"
+  },
+  "scripts": {
+    "start": "yarn workspace @vjcspy/g-app start",
+    "build:base": "yarn workspace @vjcspy/g-base build",
+    "build:upward": "yarn workspace @vjcspy/g-upward build",
+    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('Must be installed with Yarn')\""
+  },
+  "repository": {
+    "type": "git"
+  },
+  "author": "mr.vjcspy@gmail.com",
+  "devDependencies": {
+    "prettier": "1.19.1",
+    "tslint-config-prettier": "^1.18.0"
+  }
+}
