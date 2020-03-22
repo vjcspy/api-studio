@@ -1,0 +1,10 @@
+{
+  "name": "default",
+  "connector": "mysql",
+  "url": "",
+  "host": "vm",
+  "port": 3306,
+  "user": "root",
+  "password": "root",
+  "database": "gapp"
+}
