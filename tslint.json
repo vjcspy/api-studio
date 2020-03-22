@@ -14,7 +14,10 @@
     "no-empty": false,
     "member-access": false,
     "member-ordering": false,
-    "ordered-imports": false
+    "ordered-imports": false,
+    "variable-name": false,
+    "no-empty-interface": false,
+    "interface-name": false
   },
   "rulesDirectory": []
 }

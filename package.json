@@ -12,6 +12,7 @@
     "start": "yarn workspace @vjcspy/g-app start",
     "build:base": "yarn workspace @vjcspy/g-base build",
     "build:upward": "yarn workspace @vjcspy/g-upward build",
+    "migrate": "yarn workspace @vjcspy/g-app migrate",
     "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('Must be installed with Yarn')\""
   },
   "repository": {

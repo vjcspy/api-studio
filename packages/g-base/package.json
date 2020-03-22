@@ -17,7 +17,8 @@
     "eslint": "lb-eslint --report-unused-disable-directives .",
     "eslint:fix": "npm run eslint -- --fix",
     "pretest": "npm run clean && npm run build",
-    "posttest": "npm run lint"
+    "posttest": "npm run lint",
+    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('Must be installed with Yarn')\""
   },
   "repository": {
     "type": "git"
