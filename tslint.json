@@ -17,7 +17,8 @@
     "ordered-imports": false,
     "variable-name": false,
     "no-empty-interface": false,
-    "interface-name": false
+    "interface-name": false,
+    "callable-types": false
   },
   "rulesDirectory": []
 }

@@ -1,9 +1,16 @@
 import {Component, ProviderMap} from '@loopback/core';
+import {AuthenticationComponent} from '@loopback/authentication';
+import {hasDependentComponent} from './decorators';
 
-export class GBaseComponent implements Component {
-    constructor() {
-    }
+@hasDependentComponent
+export class BaseComponent implements Component {
 
-    providers?: ProviderMap = {};
+  static COMPONENTS = [
+    AuthenticationComponent,
+  ];
 
+  constructor() {
+  }
+
+  providers?: ProviderMap = {};
 }

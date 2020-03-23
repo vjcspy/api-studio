@@ -7,23 +7,24 @@ import {
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
-import {GBaseComponent} from '@vjcspy/g-base';
+import {BaseComponent, BaseSequence, bootComponents} from '@vjcspy/g-base';
 import _ from 'lodash';
 import path from 'path';
-import {MySequence} from './sequence';
 
 export class GApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
-  components: [
-    GBaseComponent
+  components = [
+    BaseComponent,
   ];
+
+  services: [];
 
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
     // Set up the custom sequence
-    this.sequence(MySequence);
+    this.sequence(BaseSequence);
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
@@ -50,10 +51,11 @@ export class GApplication extends BootMixin(
       },
     };
 
-    this._registerComponents();
+    bootComponents(this, this.components);
+    this._registerServices();
   }
 
-  protected _registerComponents() {
-    _.each(this.components, (component: any) => this.component(component));
+  protected _registerServices() {
+    _.each(this.services, (service: any) => this.service(service));
   }
 }
