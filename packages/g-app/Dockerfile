@@ -1,10 +1,10 @@
 # Check out https://hub.docker.com/_/node to select a new base image
 FROM node:10-slim
 
-# Set to a non-root built-in user `node`
+# Set to a non-root built-in authentication `node`
 USER node
 
-# Create app directory (with user `node`)
+# Create app directory (with authentication `node`)
 RUN mkdir -p /home/node/app
 
 WORKDIR /home/node/app

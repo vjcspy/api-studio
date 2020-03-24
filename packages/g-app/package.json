@@ -22,7 +22,7 @@
     "docker:run": "docker run -p 3000:3000 -d g-base",
     "migrate": "node ./dist/migrate",
     "prestart": "npm run build",
-    "start": "node -r source-map-support/register .",
+    "start": "node --inspect -r source-map-support/register .",
     "prepublishOnly": "npm run test",
     "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('Must be installed with Yarn')\""
   },
@@ -39,6 +39,7 @@
     "!*/__tests__"
   ],
   "dependencies": {
+    "@loopback/authentication": "^4.1.0",
     "@loopback/boot": "^2.0.1",
     "@loopback/context": "^3.1.0",
     "@loopback/core": "^2.1.0",
@@ -47,8 +48,10 @@
     "@loopback/rest": "^3.0.1",
     "@loopback/rest-explorer": "^2.0.1",
     "@loopback/service-proxy": "^2.0.1",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "loopback-connector-mysql": "^5.4.3",
+    "oauth2-server": "^3.0.1",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
@@ -57,6 +60,7 @@
     "@loopback/testlab": "^2.0.1",
     "@types/lodash": "^4.14.149",
     "@types/node": "^10.17.17",
+    "@types/oauth2-server": "^3.0.12",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/parser": "^2.24.0",
     "eslint": "^6.8.0",

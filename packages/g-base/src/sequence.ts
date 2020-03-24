@@ -44,20 +44,20 @@ export class BaseSequence implements SequenceHandler {
       this.send(response, result);
     } catch (error) {
       //
-      // The authentication action utilizes a strategy resolver to find
-      // an authentication strategy by name, and then it calls
-      // strategy.authenticate(request).
+      // The authentication action utilizes a strategies resolver to find
+      // an authentication strategies by name, and then it calls
+      // strategies.authenticate(request).
       //
-      // The strategy resolver throws a non-http error if it cannot
-      // resolve the strategy. When the strategy resolver obtains
-      // a strategy, it calls strategy.authenticate(request) which
-      // is expected to return a user profile. If the user profile
+      // The strategies resolver throws a non-http error if it cannot
+      // resolve the strategies. When the strategies resolver obtains
+      // a strategies, it calls strategies.authenticate(request) which
+      // is expected to return a authentication profile. If the authentication profile
       // is undefined, then it throws a non-http error.
       //
       // It is necessary to catch these errors and add HTTP-specific status
       // code property.
       //
-      // Errors thrown by the strategy implementations already come
+      // Errors thrown by the strategies implementations already come
       // with statusCode set.
       //
       // In the future, we want to improve `@loopback/rest` to provide

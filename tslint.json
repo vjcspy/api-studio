@@ -19,7 +19,9 @@
     "no-empty-interface": false,
     "interface-name": false,
     "callable-types": false,
-    "no-return-await": false
+    "no-return-await": false,
+    "no-shadowed-variable": false,
+    "no-var-requires": false
   },
   "rulesDirectory": []
 }

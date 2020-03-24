@@ -10,7 +10,10 @@ import {ServiceMixin} from '@loopback/service-proxy';
 import {BaseComponent, BaseSequence, bootComponents} from '@vjcspy/g-base';
 import _ from 'lodash';
 import path from 'path';
-import {OAuthServerModelProvider} from './services';
+import {OAuth2ServerProvider} from './services';
+import {registerAuthenticationStrategy} from '@loopback/authentication';
+import {BasicAuthenticationStrategy} from './strategies';
+import {JWTAuthenticationStrategy} from './strategies/jwt-trategy';
 
 export class GApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -20,7 +23,7 @@ export class GApplication extends BootMixin(
   ];
 
   services: [
-    OAuthServerModelProvider
+    OAuth2ServerProvider
   ];
 
   constructor(options: ApplicationConfig = {}) {
@@ -54,7 +57,13 @@ export class GApplication extends BootMixin(
       },
     };
 
+    // Add strategy to extensionPoint
+    registerAuthenticationStrategy(this, BasicAuthenticationStrategy);
+    registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
+
+    // Call function from base module, it will load dependent component
     bootComponents(this, this.components);
+
     this._registerServices();
   }
 

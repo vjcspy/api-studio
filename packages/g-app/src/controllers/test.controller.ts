@@ -55,7 +55,7 @@ export class TestController {
     };
   }
 
-  @get('/example-create-user-and-token')
+  @get('/example-create-authentication-and-token')
   async createUserAndToken(
     @repository(UserRepository) userRepo: UserRepository,
     @repository(OAuthClientRepository) oauthClientRepo: OAuthClientRepository,
@@ -81,7 +81,7 @@ export class TestController {
     return {};
   }
 
-  @get('/get-user-from-token')
+  @get('/get-authentication-from-token')
   async getUserFromToken(
     @repository(UserRepository) userRepo: UserRepository,
     @repository(OAuthClientRepository) oauthClientRepo: OAuthClientRepository,

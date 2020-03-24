@@ -1,18 +1,18 @@
-import {bind, BindingScope, inject, Provider} from '@loopback/core';
-import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../repositories';
+import {bind, BindingScope, Provider} from '@loopback/core';
+import OAuth2Server = require('oauth2-server');
 import {Getter, repository} from '@loopback/repository';
-import {OAuthToken, OAuthTokenWithRelations} from '../models';
+import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../../repositories';
+import {OAuthToken} from '../../models';
 
 /*
  * Fix the service type. Possible options can be:
- * - import {OAuthServerModel} from 'your-module';
- * - export type OAuthServerModel = string;
- * - export interface OAuthServerModel {}
+ * - import {OAuth2Server} from 'your-module';
+ * - export type OAuth2Server = string;
+ * - export interface OAuth2Server {}
  */
-export type OAuthServerModel = any;
 
 @bind({scope: BindingScope.TRANSIENT})
-export class OAuthServerModelProvider implements Provider<OAuthServerModel> {
+export class OAuth2ServerProvider implements Provider<OAuth2Server> {
   constructor(
     @repository.getter('UserRepository')
     public getUserRepository: Getter<UserRepository>,
@@ -24,29 +24,40 @@ export class OAuthServerModelProvider implements Provider<OAuthServerModel> {
   }
 
   value() {
+    return new OAuth2Server({
+      model: this.model(),
+    });
+  }
 
-    // Add your implementation here
+  protected model(): any {
     return {
       getAccessToken: async (access_token: string) => {
         console.info('getAccessToken' + access_token);
         const oauthTokenRepo = await this.getOAuthTokenRepository();
         return oauthTokenRepo.findOne({where: {access_token}});
       },
+
       getClient: async (client_id: string, client_secret: string) => {
         console.info('getClient');
         const oauthClientRepo = await this.getOAuthClientRepository();
         return oauthClientRepo.findOne({where: {client_id, client_secret}});
       },
+
       getRefreshToken: async (refresh_token: string) => {
         console.info('getRefreshToken');
         const oauthTokenRepo = await this.getOAuthTokenRepository();
         return oauthTokenRepo.findOne({where: {refresh_token}});
       },
+
+      /*
+      * Su dung trong Password Grant de verify xem nguoi  dung co ton tai  khong
+      * */
       getUser: async (username: string, password: string) => {
         console.info('getUser');
         const userRepo = await this.getUserRepository();
         return userRepo.findOne({where: {id: 1}});
       },
+
       saveToken: async (token: any, client: any, user: any) => {
         console.info('saveToken');
         const oauthTokenRepo = await this.getOAuthTokenRepository();
@@ -64,6 +75,10 @@ export class OAuthServerModelProvider implements Provider<OAuthServerModel> {
 
 
         return oAuthTokenData;
+      },
+
+      saveAuthorizationCode: async (code: string, client: any, user: any) => {
+
       },
     };
   }
