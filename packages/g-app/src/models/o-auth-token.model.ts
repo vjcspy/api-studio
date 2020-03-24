@@ -2,7 +2,7 @@ import {belongsTo, Entity, hasOne, model, property} from '@loopback/repository';
 import {OAuthClient} from './o-auth-client.model';
 import {User, UserWithRelations} from './user.model';
 
-@model()
+@model({settings: {strict: false}})
 export class OAuthToken extends Entity {
   @property({
     type: 'number',
@@ -41,6 +41,12 @@ export class OAuthToken extends Entity {
     type: 'string',
   })
   client_id?: string;
+
+  // Define well-known properties here
+
+  // Indexer property to allow additional data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [prop: string]: any;
 
   constructor(data?: Partial<OAuthToken>) {
     super(data);

@@ -1,9 +1,11 @@
 import {Request, RestBindings, get, ResponseObject} from '@loopback/rest';
 import {inject} from '@loopback/context';
-import {repository} from '@loopback/repository';
+import {Getter, repository} from '@loopback/repository';
 import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../repositories';
-import {OAuthClient, OAuthToken, User} from '../models';
+import {OAuthToken, User} from '../models';
 import _ from 'lodash';
+import {service} from '@loopback/core';
+import {OAuthServerModel, OAuthServerModelProvider} from '../services';
 
 /**
  * OpenAPI response for ping()
@@ -58,6 +60,8 @@ export class TestController {
     @repository(UserRepository) userRepo: UserRepository,
     @repository(OAuthClientRepository) oauthClientRepo: OAuthClientRepository,
     @repository(OAuthTokenRepository) oauthTokenRepo: OAuthTokenRepository,
+    @repository.getter('UserRepository')
+      getUserRepository: Getter<UserRepository>,
   ): Promise<object> {
     const users = [
       new User({phone: this.randomString(11)}),
@@ -72,7 +76,7 @@ export class TestController {
         access_token: this.randomString(),
       });
       // @ts-ignore
-      userRepo.o_auth_token(user.id).create(tokenData);
+      (await getUserRepository()).o_auth_token(user.id).create(tokenData);
     });
     return {};
   }
@@ -89,6 +93,13 @@ export class TestController {
       }, include: [{relation: 'user'}],
     });
     return {oAuthToken};
+  }
+
+  @get('/how-to-get-service')
+  async howToGetService(
+    @service(OAuthServerModelProvider) oAuthServerModel: OAuthServerModel,
+  ) {
+    return await (oAuthServerModel.getAccessToken('55z5sne8k'));
   }
 
   protected randomString(length: number = 7) {

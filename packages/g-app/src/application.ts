@@ -10,6 +10,7 @@ import {ServiceMixin} from '@loopback/service-proxy';
 import {BaseComponent, BaseSequence, bootComponents} from '@vjcspy/g-base';
 import _ from 'lodash';
 import path from 'path';
+import {OAuthServerModelProvider} from './services';
 
 export class GApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -18,7 +19,9 @@ export class GApplication extends BootMixin(
     BaseComponent,
   ];
 
-  services: [];
+  services: [
+    OAuthServerModelProvider
+  ];
 
   constructor(options: ApplicationConfig = {}) {
     super(options);
