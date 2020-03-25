@@ -37,7 +37,7 @@ export class OAuthToken extends Entity {
   })
   user_id?: number;
 
-  @belongsTo(() => OAuthClient, {name: 'o_auth_client'}, {
+  @belongsTo(() => OAuthClient, {name: 'client'}, {
     type: 'string',
   })
   client_id?: string;

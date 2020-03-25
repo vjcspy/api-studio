@@ -1,4 +1,4 @@
-import {Entity, model, property, hasOne} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
 import {OAuthToken} from './o-auth-token.model';
 
 @model({settings: {strict: false}})
@@ -22,6 +22,32 @@ export class User extends Entity {
     },
   })
   phone: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    length: 20,
+    mysql: {
+      columnName: 'username',
+      dataType: 'VARCHAR',
+      dataLength: 20,
+      nullable: 'Y',
+    },
+  })
+  username: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    length: 20,
+    mysql: {
+      columnName: 'password',
+      dataType: 'VARCHAR',
+      dataLength: 20,
+      nullable: 'Y',
+    },
+  })
+  password: string;
 
   @property({
     'type': 'Date',
@@ -57,8 +83,8 @@ export class User extends Entity {
   })
   last_modified_at?: Date;
 
-  @hasOne(() => OAuthToken, {keyTo: 'user_id'})
-  o_auth_token?: OAuthToken;
+  @hasMany(() => OAuthToken, {keyTo: 'user_id'})
+  tokens?: OAuthToken;
 
   // Define well-known properties here
 

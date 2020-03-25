@@ -5,7 +5,6 @@ import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../re
 import {OAuthToken, User} from '../models';
 import _ from 'lodash';
 import {service} from '@loopback/core';
-import {OAuthServerModel, OAuthServerModelProvider} from '../services';
 
 /**
  * OpenAPI response for ping()
@@ -93,13 +92,6 @@ export class TestController {
       }, include: [{relation: 'user'}],
     });
     return {oAuthToken};
-  }
-
-  @get('/how-to-get-service')
-  async howToGetService(
-    @service(OAuthServerModelProvider) oAuthServerModel: OAuthServerModel,
-  ) {
-    return await (oAuthServerModel.getAccessToken('55z5sne8k'));
   }
 
   protected randomString(length: number = 7) {

@@ -1,5 +1,6 @@
-import {Entity, model, property, hasOne} from '@loopback/repository';
+import {Entity, model, property, hasOne, hasMany} from '@loopback/repository';
 import {OAuthToken} from './o-auth-token.model';
+import {OAuthClientGrant} from './o-auth-client-grant.model';
 
 @model()
 export class OAuthClient extends Entity {
@@ -22,8 +23,11 @@ export class OAuthClient extends Entity {
   })
   client_secret: string;
 
-  @hasOne(() => OAuthToken, {keyTo: 'client_id'})
-  oAuthToken: OAuthToken;
+  @hasMany(() => OAuthToken, {keyTo: 'client_id', keyFrom: 'client_id'})
+  tokens: OAuthToken;
+
+  @hasMany(() => OAuthClientGrant, {keyTo: 'client_id', keyFrom: 'client_id'})
+  grants: OAuthClientGrant[];
 
   constructor(data?: Partial<OAuthClient>) {
     super(data);

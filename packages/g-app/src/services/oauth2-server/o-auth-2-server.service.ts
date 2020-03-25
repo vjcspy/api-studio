@@ -3,6 +3,7 @@ import OAuth2Server = require('oauth2-server');
 import {Getter, repository} from '@loopback/repository';
 import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../../repositories';
 import {OAuthToken} from '../../models';
+import * as _ from 'lodash';
 
 /*
  * Fix the service type. Possible options can be:
@@ -40,7 +41,22 @@ export class OAuth2ServerProvider implements Provider<OAuth2Server> {
       getClient: async (client_id: string, client_secret: string) => {
         console.info('getClient');
         const oauthClientRepo = await this.getOAuthClientRepository();
-        return oauthClientRepo.findOne({where: {client_id, client_secret}});
+        const client = await oauthClientRepo.findOne({
+          where: {client_id, client_secret},
+          include: [{relation: 'grants'}],
+        });
+
+        if (client) {
+          const grants: any = [];
+          _.each(client.grants, (g) => grants.push(g.type));
+          client.grants = grants;
+
+          const clientObject =  client.toObject();
+          console.info(clientObject);
+
+          return clientObject;
+        }
+        return false;
       },
 
       getRefreshToken: async (refresh_token: string) => {
@@ -55,7 +71,7 @@ export class OAuth2ServerProvider implements Provider<OAuth2Server> {
       getUser: async (username: string, password: string) => {
         console.info('getUser');
         const userRepo = await this.getUserRepository();
-        return userRepo.findOne({where: {id: 1}});
+        return userRepo.findOne({where: {username, password}});
       },
 
       saveToken: async (token: any, client: any, user: any) => {

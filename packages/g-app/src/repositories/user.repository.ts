@@ -1,4 +1,9 @@
-import {DefaultTransactionalRepository, Getter, HasOneRepositoryFactory, repository} from '@loopback/repository';
+import {
+  DefaultTransactionalRepository,
+  Getter,
+  HasManyRepositoryFactory,
+  repository,
+} from '@loopback/repository';
 import {OAuthToken, User, UserRelations} from '../models';
 import {DefaultDataSource} from '../datasources';
 import {inject} from '@loopback/core';
@@ -8,7 +13,7 @@ export class UserRepository extends DefaultTransactionalRepository<User,
   typeof User.prototype.id,
   UserRelations> {
 
-  public readonly o_auth_token: HasOneRepositoryFactory<OAuthToken,
+  public readonly tokens: HasManyRepositoryFactory<OAuthToken,
     typeof OAuthToken.prototype.id>;
 
   constructor(
@@ -19,12 +24,12 @@ export class UserRepository extends DefaultTransactionalRepository<User,
     super(User, dataSource);
 
     // retrieve OAuthTokenRepo
-    this.o_auth_token = this.createHasOneRepositoryFactoryFor(
-      'o_auth_token',
+    this.tokens = this.createHasManyRepositoryFactoryFor(
+      'tokens',
       getOAuthTokenRepository,
     );
 
-    // register inclusion resolver
-    this.registerInclusionResolver('o_auth_token', this.o_auth_token.inclusionResolver);
+    // register inclusion tokens
+    this.registerInclusionResolver('tokens', this.tokens.inclusionResolver);
   }
 }
