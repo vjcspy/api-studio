@@ -4,6 +4,7 @@ import {Getter, repository} from '@loopback/repository';
 import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../../repositories';
 import {OAuthToken} from '../../models';
 import * as _ from 'lodash';
+import {keysToCamel} from '@vjcspy/g-base';
 
 /*
  * Fix the service type. Possible options can be:
@@ -45,16 +46,14 @@ export class OAuth2ServerProvider implements Provider<OAuth2Server> {
           where: {client_id, client_secret},
           include: [{relation: 'grants'}],
         });
-
         if (client) {
           const grants: any = [];
           _.each(client.grants, (g) => grants.push(g.type));
-          client.grants = grants;
-
-          const clientObject =  client.toObject();
-          console.info(clientObject);
-
-          return clientObject;
+          return {
+            clientId: client_id,
+            clientSecret: client_secret,
+            grants,
+          };
         }
         return false;
       },
@@ -80,17 +79,14 @@ export class OAuth2ServerProvider implements Provider<OAuth2Server> {
         const oAuthTokenData = {
           access_token: token.accessToken,
           access_token_expires_on: token.accessTokenExpiresOn,
-          o_auth_client: client,
-          client_id: client.clientId,
+          client_id: client.client_id,
           refresh_token: token.refreshToken,
           refresh_token_expires_on: token.refreshTokenExpiresOn,
-          user,
           user_id: user.id,
         };
         await oauthTokenRepo.save(new OAuthToken(oAuthTokenData));
 
-
-        return oAuthTokenData;
+        return {...token, userId: user.id, clientId: client.client_id, client, user};
       },
 
       saveAuthorizationCode: async (code: string, client: any, user: any) => {

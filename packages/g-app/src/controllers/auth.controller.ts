@@ -3,12 +3,12 @@
 // import {inject} from '@loopback/context';
 
 
-import {get, post} from '@loopback/openapi-v3';
+import {get, post, requestBody} from '@loopback/openapi-v3';
 import {service} from '@loopback/core';
 import {OAuth2ServerProvider} from '../services';
 import OAuth2Server = require('oauth2-server');
 import {inject} from '@loopback/context';
-import {Request, RestBindings} from '@loopback/rest';
+import {Request, RestBindings, Response} from '@loopback/rest';
 import {Getter, repository} from '@loopback/repository';
 import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../repositories';
 import {OAuthClient, OAuthClientGrant, User} from '../models';
@@ -34,9 +34,29 @@ export class AuthController {
   }
 
   @post('/oauth/token')
-  async getToken() {
+  async getToken(
+    @requestBody({
+      description: 'data',
+      content: {
+        'application/x-www-form-urlencoded': {
+          schema: {
+            type: 'object',
+            properties: {
+              grant_type: {type: 'string'},
+              username: {type: 'string'},
+              password: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+      data: object,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ) {
     const {Request, Response} = OAuth2Server;
-    const token = await this.oAuth2Server.token(new Request(this.req), new Response());
+    const request = {...this.req, body: {...data}};
+
+    const token = await this.oAuth2Server.token(new Request(request), new Response(response));
 
     return {token};
   }
