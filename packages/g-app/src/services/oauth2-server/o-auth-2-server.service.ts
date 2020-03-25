@@ -4,7 +4,6 @@ import {Getter, repository} from '@loopback/repository';
 import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../../repositories';
 import {OAuthToken} from '../../models';
 import * as _ from 'lodash';
-import {keysToCamel} from '@vjcspy/g-base';
 
 /*
  * Fix the service type. Possible options can be:
