@@ -1,4 +1,4 @@
-import {belongsTo, Entity, hasOne, model, property} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {OAuthClient} from './o-auth-client.model';
 import {User, UserWithRelations} from './user.model';
 
@@ -14,33 +14,73 @@ export class OAuthToken extends Entity {
   @property({
     type: 'string',
     required: true,
+    mysql:
+      {
+        columnName: 'access_token',
+        dataType: 'VARCHAR',
+        dataLength: 50,
+        nullable: 'N',
+      },
   })
-  access_token: string;
+  accessToken: string;
 
   @property({
     type: 'date',
+    mysql:
+      {
+        columnName: 'access_token_expires_at',
+        dataType: 'DATETIME',
+        nullable: 'N',
+      },
   })
-  access_token_expires_on?: string;
+  accessTokenExpiresAt?: Date;
 
   @property({
     type: 'string',
+    mysql:
+      {
+        columnName: 'refresh_token',
+        dataType: 'VARCHAR',
+        dataLength: 50,
+        nullable: 'N',
+      },
   })
-  refresh_token?: string;
+  refreshToken?: string;
 
   @property({
     type: 'date',
+    mysql:
+      {
+        columnName: 'refresh_token_expires_at',
+        dataType: 'DATETIME',
+        nullable: 'N',
+      },
   })
-  refresh_token_expires_on?: string;
+  refreshTokenExpiresAt?: Date;
 
   @belongsTo(() => User, {name: 'user'}, {
     type: 'number',
+    mysql:
+      {
+        columnName: 'user_id',
+        dataType: 'INT',
+        dataLength: 50,
+        nullable: 'N',
+      },
   })
-  user_id?: number;
+  userId?: number;
 
   @belongsTo(() => OAuthClient, {name: 'client'}, {
     type: 'string',
+    mysql:
+      {
+        columnName: 'client_id',
+        dataType: 'VARCHAR',
+        dataLength: 50,
+        nullable: 'N',
+      },
   })
-  client_id?: string;
+  clientId?: string;
 
   // Define well-known properties here
 
@@ -55,7 +95,7 @@ export class OAuthToken extends Entity {
 
 export interface OAuthTokenRelations {
   user?: UserWithRelations;
-  o_auth_client?: OAuthClient
+  client?: OAuthClient
 }
 
 export type OAuthTokenWithRelations = OAuthToken & OAuthTokenRelations;

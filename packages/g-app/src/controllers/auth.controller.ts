@@ -65,16 +65,16 @@ export class AuthController {
   async dummyData() {
     const clients = [
       new OAuthClient({
-        client_id: 'application_id',
-        client_secret: 'application_secret',
+        clientId: 'application_id',
+        clientSecret: 'application_secret',
       }),
       new OAuthClient({
-        client_id: 'application_' + randomString(5),
-        client_secret: randomString(20),
+        clientId: 'application_' + randomString(5),
+        clientSecret: randomString(20),
       }),
       new OAuthClient({
-        client_id: 'application_' + randomString(5),
-        client_secret: randomString(20),
+        clientId: 'application_' + randomString(5),
+        clientSecret: randomString(20),
       }),
     ];
 
@@ -92,10 +92,10 @@ export class AuthController {
 
     _.each(clients, async (client) => {
       const clientRepository = await this.getOAuthClientRepository();
-      const newClient = await clientRepository.save(client);
+      const newClient: OAuthClient = await clientRepository.save(client);
       _.each(grants, async grant => {
         // @ts-ignore
-        (await this.getOAuthClientRepository()).grants(newClient.client_id).create(grant);
+        (await this.getOAuthClientRepository()).grants(newClient.clientId).create(grant);
       });
 
     });
@@ -118,7 +118,6 @@ export class AuthController {
   async dumpDb() {
     const userRepository = await this.getUserRepository();
     const clientRepository = await this.getOAuthClientRepository();
-    const tokenRepository = await this.getOAuthTokenRepository();
 
     const users = await userRepository.find({include: [{relation: 'tokens'}]});
     const clients = await clientRepository.find({include: [{relation: 'grants'}]});

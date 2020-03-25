@@ -38,29 +38,29 @@ export class OAuth2ServerProvider implements Provider<OAuth2Server> {
         return oauthTokenRepo.findOne({where: {access_token}});
       },
 
-      getClient: async (client_id: string, client_secret: string) => {
+      getClient: async (clientId: string, clientSecret: string) => {
         console.info('getClient');
         const oauthClientRepo = await this.getOAuthClientRepository();
         const client = await oauthClientRepo.findOne({
-          where: {client_id, client_secret},
+          where: {clientId, clientSecret},
           include: [{relation: 'grants'}],
         });
         if (client) {
           const grants: any = [];
           _.each(client.grants, (g) => grants.push(g.type));
           return {
-            clientId: client_id,
-            clientSecret: client_secret,
+            clientId,
+            clientSecret,
             grants,
           };
         }
         return false;
       },
 
-      getRefreshToken: async (refresh_token: string) => {
+      getRefreshToken: async (refreshToken: string) => {
         console.info('getRefreshToken');
         const oauthTokenRepo = await this.getOAuthTokenRepository();
-        return oauthTokenRepo.findOne({where: {refresh_token}});
+        return oauthTokenRepo.findOne({where: {refreshToken}});
       },
 
       /*
@@ -76,12 +76,12 @@ export class OAuth2ServerProvider implements Provider<OAuth2Server> {
         console.info('saveToken');
         const oauthTokenRepo = await this.getOAuthTokenRepository();
         const oAuthTokenData = {
-          access_token: token.accessToken,
-          access_token_expires_on: token.accessTokenExpiresOn,
-          client_id: client.client_id,
-          refresh_token: token.refreshToken,
-          refresh_token_expires_on: token.refreshTokenExpiresOn,
-          user_id: user.id,
+          accessToken: token.accessToken,
+          accessTokenExpiresAt: token.accessTokenExpiresAt,
+          clientId: client.clientId,
+          refreshToken: token.refreshToken,
+          refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+          userId: user.id,
         };
         await oauthTokenRepo.save(new OAuthToken(oAuthTokenData));
 

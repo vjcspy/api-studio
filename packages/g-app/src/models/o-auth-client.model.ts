@@ -1,4 +1,4 @@
-import {Entity, model, property, hasOne, hasMany} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
 import {OAuthToken} from './o-auth-token.model';
 import {OAuthClientGrant} from './o-auth-client-grant.model';
 
@@ -14,19 +14,33 @@ export class OAuthClient extends Entity {
   @property({
     type: 'string',
     required: true,
+    mysql:
+      {
+        columnName: 'client_id',
+        dataType: 'VARCHAR',
+        dataLength: 50,
+        nullable: 'N',
+      },
   })
-  client_id: string;
+  clientId: string;
 
   @property({
     type: 'string',
     required: true,
+    mysql:
+      {
+        columnName: 'client_secret',
+        dataType: 'VARCHAR',
+        dataLength: 50,
+        nullable: 'N',
+      },
   })
-  client_secret: string;
+  clientSecret: string;
 
-  @hasMany(() => OAuthToken, {keyTo: 'client_id', keyFrom: 'client_id'})
+  @hasMany(() => OAuthToken, {keyTo: 'clientId', keyFrom: 'clientId'})
   tokens: OAuthToken;
 
-  @hasMany(() => OAuthClientGrant, {keyTo: 'client_id', keyFrom: 'client_id'})
+  @hasMany(() => OAuthClientGrant, {keyTo: 'clientId', keyFrom: 'clientId'})
   grants: OAuthClientGrant[];
 
   constructor(data?: Partial<OAuthClient>) {

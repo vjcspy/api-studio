@@ -64,7 +64,7 @@ export class User extends Entity {
       'nullable': 'Y',
     },
   })
-  created_at?: Date;
+  createdAt?: Date;
 
   @property({
     'type': 'Date',
@@ -81,9 +81,9 @@ export class User extends Entity {
       'nullable': 'Y',
     },
   })
-  last_modified_at?: Date;
+  lastModifiedAt?: Date;
 
-  @hasMany(() => OAuthToken, {keyTo: 'user_id'})
+  @hasMany(() => OAuthToken, {keyTo: 'userId'})
   tokens?: OAuthToken;
 
   // Define well-known properties here

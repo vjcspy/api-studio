@@ -16,10 +16,17 @@ export class OAuthClientGrant extends Entity {
   })
   type: string;
 
-  @belongsTo(() => OAuthClient, {name: 'o_auth_client'}, {
+  @belongsTo(() => OAuthClient, {name: 'client'}, {
     type: 'string',
+    mysql:
+      {
+        columnName: 'client_id',
+        dataType: 'VARCHAR',
+        dataLength: 50,
+        nullable: 'N',
+      },
   })
-  client_id?: string;
+  clientId?: string;
 
   // Define well-known properties here
 
@@ -33,7 +40,7 @@ export class OAuthClientGrant extends Entity {
 }
 
 export interface OAuthClientGrantRelations {
-  // describe navigational properties here
+  client: OAuthClient
 }
 
 export type OAuthClientGrantWithRelations = OAuthClientGrant & OAuthClientGrantRelations;
