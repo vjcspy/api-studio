@@ -7,6 +7,7 @@ import {HttpErrors} from '@loopback/rest';
 import {securityId, UserProfile} from '@loopback/security';
 import {promisify} from 'util';
 import {TokenService} from '@loopback/authentication';
+import {randomString} from '@vjcspy/g-base';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -14,7 +15,7 @@ const verifyAsync = promisify(jwt.verify);
 
 export class JWTService implements TokenService {
   constructor(
-    private jwtSecret: string = 'abcd',
+    private jwtSecret: string = randomString(),
     private jwtExpiresIn: string = '',
   ) {
   }
