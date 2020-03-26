@@ -2,9 +2,9 @@
   "name": "default",
   "connector": "mysql",
   "url": "",
-  "host": "vm",
+  "host": "localhost",
   "port": 3306,
   "user": "root",
   "password": "root",
-  "database": "gapp"
+  "database": "api"
 }

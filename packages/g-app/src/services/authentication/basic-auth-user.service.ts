@@ -1,18 +1,17 @@
-import {bind, BindingScope, inject} from '@loopback/core';
+import {bind, BindingScope} from '@loopback/core';
 import {User} from '../../models';
 import {repository} from '@loopback/repository';
 import {UserRepository} from '../../repositories';
-import {UserProfile} from '@loopback/security';
-import {AuthenticationBindings, UserProfileFactory, UserService} from '@loopback/authentication';
+import {UserProfile, securityId} from '@loopback/security';
+import {UserService} from '@loopback/authentication';
 import {HttpErrors} from '@loopback/rest';
 import {BasicAuthenticationStrategyCredentials} from '../../strategies';
+import {randomString} from '@vjcspy/g-base';
 
 @bind({scope: BindingScope.TRANSIENT})
 export class BasicAuthUserService implements UserService<User, BasicAuthenticationStrategyCredentials> {
   constructor(
     @repository(UserRepository) protected userRepository: UserRepository,
-    @inject(AuthenticationBindings.USER_PROFILE_FACTORY)
-    public userProfileFactory: UserProfileFactory<User>,
   ) {
   }
 
@@ -59,6 +58,9 @@ export class BasicAuthUserService implements UserService<User, BasicAuthenticati
       throw new HttpErrors.Unauthorized(`'user id' is null`);
     }
 
-    return this.userProfileFactory(user);
+    return {
+      [securityId]: randomString(),
+      username: user.username,
+    };
   }
 }
