@@ -45,6 +45,47 @@ Các function cần thiết phải implement trong model:
 -   [saveToken(token, client, user, [callback])](https://oauth2-server.readthedocs.io/en/latest/model/spec.html#model-savetoken): Save token vào database
 -   [validateScope(user, client, scope, [callback])](https://oauth2-server.readthedocs.io/en/latest/model/spec.html#model-validatescope): Verify xem client được vào những scope resource nào
 
+Phải include client credentials vào header, user credentials và grant type vào trong request body:
+
+-   **Headers**
+    -   **Authorization**:  `"Basic " + clientId:clientSecret base64'd`
+
+        -   (for example, to use  `application:secret`, you should send  `Basic YXBwbGljYXRpb246c2VjcmV0`)
+    -   **Content-Type**:  `application/x-www-form-urlencoded`
+
+-   **Body**
+    -   `grant_type=password&username=pedroetb&password=password`
+        -   (contains 3 parameters:  `grant_type`,  `username`  and  `password`)
+
+For example, using  `curl`:
+
+```
+curl http://localhost:3000/oauth/token \
+	-d "grant_type=password" \
+	-d "username=pedroetb" \
+	-d "password=password" \
+	-H "Authorization: Basic YXBwbGljYXRpb246c2VjcmV0" \
+	-H "Content-Type: application/x-www-form-urlencoded"
+
+```
+
+Server sẽ respond như thế này:
+
+```
+{
+	"accessToken": "951d6f603c2ce322c5def00ce58952ed2d096a72",
+	"accessTokenExpiresAt": "2018-11-18T16:18:25.852Z",
+	"refreshToken": "67c8300ad53efa493c2278acf12d92bdb71832f9",
+	"refreshTokenExpiresAt": "2018-12-02T15:18:25.852Z",
+	"client": {
+		"id": "application"
+	},
+	"user": {
+		"id": "pedroetb"
+	}
+}
+```
+
 ### Authorization Code Grant
 
      +----------+
@@ -75,7 +116,7 @@ Các function cần thiết phải implement trong model:
 
    Note: The lines illustrating steps (A), (B), and (C) are broken into
    two parts as they pass through the user-agent.
-   
+
    The flow illustrated in Figure 3 includes the following steps:
 
    (A)  The client initiates the flow by directing the resource owner's
@@ -108,7 +149,7 @@ Các function cần thiết phải implement trong model:
         step (C).  If valid, the authorization server responds back with
         an access token and, optionally, a refresh token.
 
-Chúng  ta có thể thay thế bước A, B thành 1 flow khác để lấy được Authorization Code. Chẳng  hạn như oauth server sẽ gửi  về một mã OTP cho Resource Owner và họ sẽ nhập vào client app. Các bước sau tương tự. 
+Chúng  ta có thể thay thế bước A, B thành 1 flow khác để lấy được Authorization Code. Chẳng  hạn như oauth server sẽ gửi  về một mã OTP cho Resource Owner và họ sẽ nhập vào client app. Các bước sau tương tự.
 
 Các function cần phải implement trong model:
 
@@ -122,3 +163,32 @@ Các function cần phải implement trong model:
 -   [revokeAuthorizationCode(code, [callback])](https://oauth2-server.readthedocs.io/en/latest/model/spec.html#model-revokeauthorizationcode): Xoá Authorization code khỏi database
 -   [validateScope(user, client, scope, [callback])](https://oauth2-server.readthedocs.io/en/latest/model/spec.html#model-validatescope): Verify scope
 
+Base trên authorization code grant type, chúng ta tạo ra kiểu verify bằng phone number. Đầu tiên người  dùng sẽ nhập số điện thoại trên app -> gửi request lên server để sinh ra mã OTP. Mã OTP này  sau được gửi đến người dùng (ở đây chính là authorization code). Thay vì nguyên bản của grant type này phải gửi user credentials hoặc người dùng phải login thì bây giờ chứng thực bằng OTP.
+
+```c
+curl --location --request POST 'http://localhost:3000/oauth/phone-authorize' \
+--header 'Authorization: Basic YXBwbGljYXRpb25faWQ6YXBwbGljYXRpb25fc2VjcmV0' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'phone=123456789' \
+--data-urlencode 'client_id=YXBwbGljYXRpb25faWQ6YXBwbGljYXRpb25fc2VjcmV0' \
+--data-urlencode 'response_type=code'
+```
+Lưu ý client_id được tạo thành bằng: encodeBase64(clientId:clientSecret). Request này sẽ trigger server trả về OTP cho user.
+
+Người dùng sau khi có mã OTP sẽ nhập vào app để tạo request lấy token. Lưu ý phải include client credentials vào header, user credentials và grant type vào trong request body:
+
+-   **Headers**
+    -   **Authorization**:  `"Basic " + clientId:clientSecret base64'd`
+
+        -   (for example, to use  `application:secret`, you should send  `Basic YXBwbGljYXRpb246c2VjcmV0`)
+    -   **Content-Type**:  `application/x-www-form-urlencoded`
+
+-   **Body**
+    -   `grant_type=authorization_code&code=1234`
+        -   (contains 2 parameters:  `grant_type`,  `code` )
+```c
+curl --location --request POST 'http://localhost:3000/oauth/token' \
+--header 'Authorization: Basic YXBwbGljYXRpb25faWQ6YXBwbGljYXRpb25fc2VjcmV0' \
+--data-urlencode 'code=1234' \
+--data-urlencode 'grant_type=authorization_code'
+```
