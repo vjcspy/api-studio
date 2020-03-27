@@ -2,7 +2,6 @@
 
 // import {inject} from '@loopback/context';
 
-
 import {get, post, requestBody} from '@loopback/openapi-v3';
 import {service} from '@loopback/core';
 import {OAuth2ServerProvider} from '../services';
@@ -10,7 +9,12 @@ import OAuth2Server = require('oauth2-server');
 import {inject} from '@loopback/context';
 import {Request, RestBindings, Response} from '@loopback/rest';
 import {Getter, repository} from '@loopback/repository';
-import {OAuthClientRepository, OAuthTokenRepository, UserRepository} from '../repositories';
+import {
+  OAuthAuthorizationCodeRepository,
+  OAuthClientRepository,
+  OAuthTokenRepository,
+  UserRepository,
+} from '../repositories';
 import {OAuthClient, OAuthClientGrant, User} from '../models';
 import {randomString} from '@vjcspy/g-base';
 import * as _ from 'lodash';
@@ -25,73 +29,111 @@ export class AuthController {
     public getOAuthTokenRepository: Getter<OAuthTokenRepository>,
     @repository.getter('OAuthClientRepository')
     public getOAuthClientRepository: Getter<OAuthClientRepository>,
+    @repository.getter('OAuthAuthorizationCodeRepository')
+    public getOAuthAuthorizationCodeRepository: Getter<OAuthAuthorizationCodeRepository>,
   ) {
   }
 
-  @post('/auth/generate-otp')
-  generateOtp() {
-    return 'otp';
+  @post('/oauth/phone-authorize')
+  async phoneAuthorize(
+    @requestBody({
+                   description: 'data',
+                   content: {
+                     'application/x-www-form-urlencoded': {
+                       schema: {
+                         type: 'object',
+                         properties: {
+                           grant_type: {type: 'string'},
+                           phone: {type: 'string'},
+                         },
+                       },
+                     },
+                   },
+                 })
+      data: any,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ) {
+    const {Request, Response} = OAuth2Server;
+    const request             = {...this.req, body: {...data}, response_type: 'code'};
+
+    const authenticateHandler = {
+      handle: async (request: any, response: any) => {
+        const userRepository = await this.getUserRepository();
+
+        const user = await userRepository.findOne({
+                                                    where: {
+                                                      phone: data.phone,
+                                                    },
+                                                  });
+        return user ? {phone: user.phone, id: user.id, userId: user.id} : false;
+      },
+    };
+
+    return await this.oAuth2Server.authorize(new Request(request), new Response(response), {
+      authenticateHandler,
+      allowEmptyState: true,
+      authorizationCodeLifetime: 300, // 5 minutes
+    });
+
   }
 
   @post('/oauth/token')
   async getToken(
     @requestBody({
-      description: 'data',
-      content: {
-        'application/x-www-form-urlencoded': {
-          schema: {
-            type: 'object',
-            properties: {
-              grant_type: {type: 'string'},
-              username: {type: 'string'},
-              password: {type: 'string'},
-            },
-          },
-        },
-      },
-    })
+                   description: 'data',
+                   content: {
+                     'application/x-www-form-urlencoded': {
+                       schema: {
+                         type: 'object',
+                         properties: {
+                           grant_type: {type: 'string'},
+                           username: {type: 'string'},
+                           password: {type: 'string'},
+                         },
+                       },
+                     },
+                   },
+                 })
       data: object,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ) {
     const {Request, Response} = OAuth2Server;
-    const request = {...this.req, body: {...data}};
+    const request             = {...this.req, body: {...data}};
 
-    const token = await this.oAuth2Server.token(new Request(request), new Response(response));
-
-    return {token};
+    return await this.oAuth2Server.token(new Request(request), new Response(response));
   }
 
   @get('/oauth/dummy-data')
   async dummyData() {
     const clients = [
       new OAuthClient({
-        clientId: 'application_id',
-        clientSecret: 'application_secret',
-      }),
+                        clientId: 'application_id',
+                        clientSecret: 'application_secret',
+                      }),
       new OAuthClient({
-        clientId: 'application_' + randomString(5),
-        clientSecret: randomString(20),
-      }),
+                        clientId: 'application_' + randomString(5),
+                        clientSecret: randomString(20),
+                      }),
       new OAuthClient({
-        clientId: 'application_' + randomString(5),
-        clientSecret: randomString(20),
-      }),
+                        clientId: 'application_' + randomString(5),
+                        clientSecret: randomString(20),
+                      }),
     ];
 
     const grants = [
       new OAuthClientGrant({
-        type: 'password',
-      }),
+                             type: 'password',
+                           }),
       new OAuthClientGrant({
-        type: 'refresh_token',
-      }),
+                             type: 'refresh_token',
+                           }),
       new OAuthClientGrant({
-        type: 'authorization_code',
-      }),
+                             type: 'authorization_code',
+                           }),
     ];
 
     _.each(clients, async (client) => {
-      const clientRepository = await this.getOAuthClientRepository();
+      const clientRepository       = await this.getOAuthClientRepository();
       const newClient: OAuthClient = await clientRepository.save(client);
       _.each(grants, async grant => {
         // @ts-ignore
@@ -102,26 +144,28 @@ export class AuthController {
 
     const users = [
       new User({
-        phone: '123456789',
-        username: 'vjcspy',
-        password: '123456',
-      }),
+                 phone: '123456789',
+                 username: 'vjcspy',
+                 password: '123456',
+               }),
     ];
 
     _.each(users, async (user) => {
       const userRepository = await this.getUserRepository();
       await userRepository.save(user);
     });
+
+    return this.dumpDb();
   }
 
   @get('/oauth/dump-db')
   async dumpDb() {
-    const userRepository = await this.getUserRepository();
+    const userRepository   = await this.getUserRepository();
     const clientRepository = await this.getOAuthClientRepository();
+    // const codeRepository   = await this.getOAuthAuthorizationCodeRepository();
 
-    const users = await userRepository.find({include: [{relation: 'tokens'}]});
+    const users   = await userRepository.find({include: [{relation: 'tokens'}, {relation: 'authorizationCodes'}]});
     const clients = await clientRepository.find({include: [{relation: 'grants'}]});
-
 
     return {users, clients};
   }

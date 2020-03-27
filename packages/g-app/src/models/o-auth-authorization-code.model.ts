@@ -1,28 +1,15 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {OAuthClient} from './o-auth-client.model';
-import {User, UserWithRelations} from './user.model';
+import {User} from './user.model';
 
 @model({settings: {strict: false}})
-export class OAuthToken extends Entity {
+export class OAuthAuthorizationCode extends Entity {
   @property({
               type: 'number',
               id: true,
               generated: true,
             })
   id?: number;
-
-  @property({
-              type: 'string',
-              required: true,
-              mysql:
-                {
-                  columnName: 'access_token',
-                  dataType: 'VARCHAR',
-                  dataLength: 50,
-                  nullable: 'N',
-                },
-            })
-  accessToken: string;
 
   @property({
               type: 'string',
@@ -39,37 +26,26 @@ export class OAuthToken extends Entity {
 
   @property({
               type: 'date',
+              required: true,
               mysql:
                 {
-                  columnName: 'access_token_expires_at',
+                  columnName: 'expires_at',
                   dataType: 'DATETIME',
                   nullable: 'N',
                 },
             })
-  accessTokenExpiresAt?: Date;
+  expiresAt: string;
 
   @property({
               type: 'string',
               mysql:
                 {
-                  columnName: 'refresh_token',
-                  dataType: 'VARCHAR',
-                  dataLength: 50,
-                  nullable: 'N',
+                  columnName: 'redirect_uri',
+                  dataType: 'TEXT',
+                  nullable: 'Y',
                 },
             })
-  refreshToken?: string;
-
-  @property({
-              type: 'date',
-              mysql:
-                {
-                  columnName: 'refresh_token_expires_at',
-                  dataType: 'DATETIME',
-                  nullable: 'N',
-                },
-            })
-  refreshTokenExpiresAt?: Date;
+  redirectUri?: string;
 
   @property({
               type: 'string',
@@ -82,19 +58,7 @@ export class OAuthToken extends Entity {
             })
   scope?: string;
 
-  @belongsTo(() => User, {name: 'user'}, {
-    type: 'number',
-    mysql:
-      {
-        columnName: 'user_id',
-        dataType: 'INT',
-        dataLength: 50,
-        nullable: 'N',
-      },
-  })
-  userId?: number;
-
-  @belongsTo(() => OAuthClient, {name: 'client'}, {
+  @belongsTo(() => OAuthClient, {name: 'client', keyFrom: 'clientId', keyTo: 'clientId'}, {
     type: 'string',
     mysql:
       {
@@ -104,7 +68,18 @@ export class OAuthToken extends Entity {
         nullable: 'N',
       },
   })
-  clientId?: string;
+  clientId: string;
+
+  @belongsTo(() => User, {name: 'user'}, {
+    type: 'number',
+    mysql:
+      {
+        columnName: 'user_id',
+        dataType: 'INT',
+        nullable: 'N',
+      },
+  })
+  userId: number;
 
   // Define well-known properties here
 
@@ -112,14 +87,14 @@ export class OAuthToken extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<OAuthToken>) {
+  constructor(data?: Partial<OAuthAuthorizationCode>) {
     super(data);
   }
 }
 
-export interface OAuthTokenRelations {
-  user?: UserWithRelations;
-  client?: OAuthClient
+export interface OAuthAuthorizationCodeRelations {
+  client?: OAuthClient;
+  user?: User
 }
 
-export type OAuthTokenWithRelations = OAuthToken & OAuthTokenRelations;
+export type OAuthAuthorizationCodeWithRelations = OAuthAuthorizationCode & OAuthAuthorizationCodeRelations;

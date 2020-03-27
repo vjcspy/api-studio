@@ -4,9 +4,10 @@ import {
   HasManyRepositoryFactory,
   repository,
 } from '@loopback/repository';
-import {OAuthToken, User, UserRelations} from '../models';
+import {OAuthAuthorizationCode, OAuthToken, User, UserRelations} from '../models';
 import {DefaultDataSource} from '../datasources';
 import {inject} from '@loopback/core';
+import {OAuthAuthorizationCodeRepository} from './o-auth-authorization-code.repository';
 import {OAuthTokenRepository} from './o-auth-token.repository';
 
 export class UserRepository extends DefaultTransactionalRepository<User,
@@ -16,20 +17,29 @@ export class UserRepository extends DefaultTransactionalRepository<User,
   public readonly tokens: HasManyRepositoryFactory<OAuthToken,
     typeof OAuthToken.prototype.id>;
 
+  public readonly authorizationCodes: HasManyRepositoryFactory<OAuthAuthorizationCode,
+    typeof OAuthAuthorizationCode.prototype.id>;
+
   constructor(
     @inject('datasources.default') dataSource: DefaultDataSource,
     @repository.getter('OAuthTokenRepository')
       getOAuthTokenRepository: Getter<OAuthTokenRepository>,
+    @repository.getter('OAuthAuthorizationCodeRepository')
+    public getOAuthAuthorizationCodeRepository: Getter<OAuthAuthorizationCodeRepository>,
   ) {
     super(User, dataSource);
 
-    // retrieve OAuthTokenRepo
     this.tokens = this.createHasManyRepositoryFactoryFor(
       'tokens',
       getOAuthTokenRepository,
     );
-
-    // register inclusion tokens
     this.registerInclusionResolver('tokens', this.tokens.inclusionResolver);
+
+    this.authorizationCodes = this.createHasManyRepositoryFactoryFor(
+      'authorizationCodes',
+      getOAuthAuthorizationCodeRepository,
+    );
+    this.registerInclusionResolver('tokens', this.tokens.inclusionResolver);
+    this.registerInclusionResolver('authorizationCodes', this.authorizationCodes.inclusionResolver);
   }
 }
