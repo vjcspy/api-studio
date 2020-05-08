@@ -1,0 +1,19 @@
+version: "3.5"
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: "api-mysql-db"
+    domainname: "api-mysql-db"
+    hostname: "api-mysql-db"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker_data/mysql:/var/lib/mysql
+      - ./docker_data/logs/mysql:/var/log/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: docker
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+
