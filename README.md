@@ -14,4 +14,4 @@ $ cd packages
 $ lb4 extension COMPONENT_NAME
 ```
 
-Để hiểu được component làm những gì thì xem doc phần component
+Để hiểu được component làm những gì thì xem doc phần [component](https://github.com/vjcspy/api-studio/blob/master/docs/modules/component.md)
