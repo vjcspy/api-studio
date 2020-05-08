@@ -1,0 +1,47 @@
+{
+  "name": "g-sap",
+  "version": "1.0.0",
+  "description": "g-sap",
+  "keywords": [
+    "loopback-extension",
+    "loopback"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist *.tsbuildinfo",
+    "pretest": "npm run clean && npm run build",
+    "prepare": "npm run build",
+    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('Must be installed with Yarn')\""
+  },
+  "repository": {
+    "type": "git"
+  },
+  "author": "",
+  "license": "",
+  "files": [
+    "README.md",
+    "index.js",
+    "index.d.ts",
+    "dist",
+    "src",
+    "!*/__tests__"
+  ],
+  "dependencies": {
+    "@loopback/boot": "^2.0.2",
+    "@loopback/context": "^3.2.0",
+    "@loopback/core": "^2.2.0",
+    "tslib": "^1.10.0"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "source-map-support": "^0.5.16",
+    "@loopback/testlab": "^2.0.2",
+    "@types/node": "^10.17.17",
+    "typescript": "~3.8.3"
+  }
+}
