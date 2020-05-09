@@ -15,3 +15,10 @@ $ lb4 extension COMPONENT_NAME
 ```
 
 Để hiểu được component làm những gì thì xem doc phần [component](https://github.com/vjcspy/api-studio/blob/master/docs/modules/component.md)
+
+ ### Dev
+
+Project sẽ tự compile và restart lại  khi có sự thay đổi. Đã được optimize để sử dụng với debuger(zero config)
+  ```bash
+$ yarn dev
+```

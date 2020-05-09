@@ -9,6 +9,7 @@
     "node": ">=8.9"
   },
   "scripts": {
+    "dev": "concurrently --kill-others \"yarn workspace @vjcspy/g-app build:watch\" \"yarn workspace @vjcspy/g-app start:dev\"",
     "start": "yarn workspace @vjcspy/g-app start",
     "build:base": "yarn workspace @vjcspy/g-base build",
     "build:upward": "yarn workspace @vjcspy/g-upward build",
@@ -20,6 +21,7 @@
   },
   "author": "mr.vjcspy@gmail.com",
   "devDependencies": {
+    "concurrently": "^5.2.0",
     "prettier": "1.19.1",
     "tslint-config-prettier": "^1.18.0"
   }
