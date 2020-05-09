@@ -9,5 +9,7 @@ export function bootComponents(app: Application, componentsConstructor: any[]) {
     if (hasDependent) {
       c.registerDependentComponent(app);
     }
+    app.component(c);
   });
+
 }

@@ -49,6 +49,9 @@ export class AuthController {
                        },
                      },
                    },
+                   responses: {
+                     '200': null,
+                   },
                  })
       data: any,
     @inject(RestBindings.Http.RESPONSE) response: Response,
