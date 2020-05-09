@@ -13,6 +13,11 @@ import path from 'path';
 import {BasicAuthUserService, JWTService, OAuth2ServerProvider} from './services';
 import {registerAuthenticationStrategy} from '@loopback/authentication';
 import {BasicAuthenticationStrategy} from './strategies';
+import dotenv from 'dotenv';
+
+dotenv.config({
+                path: '../../.env',
+              });
 
 export class GApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -38,8 +43,8 @@ export class GApplication extends BootMixin(
 
     // Customize @loopback/rest-explorer configuration here
     this.configure(RestExplorerBindings.COMPONENT).to({
-      path: '/explorer',
-    });
+                                                        path: '/explorer',
+                                                      });
     this.component(RestExplorerComponent);
 
     this.projectRoot = __dirname;

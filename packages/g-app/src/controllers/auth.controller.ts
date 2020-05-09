@@ -7,7 +7,7 @@ import {service} from '@loopback/core';
 import {OAuth2ServerProvider} from '../services';
 import OAuth2Server = require('oauth2-server');
 import {inject} from '@loopback/context';
-import {Request, RestBindings, Response} from '@loopback/rest';
+import {Request, RestBindings, Response, HttpErrors} from '@loopback/rest';
 import {Getter, repository} from '@loopback/repository';
 import {
   OAuthAuthorizationCodeRepository,
@@ -43,7 +43,6 @@ export class AuthController {
                        schema: {
                          type: 'object',
                          properties: {
-                           grant_type: {type: 'string'},
                            phone: {type: 'string'},
                          },
                        },
@@ -57,7 +56,7 @@ export class AuthController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ) {
     const {Request, Response} = OAuth2Server;
-    const request             = {...this.req, body: {...data}, response_type: 'code'};
+    const request             = {...this.req, body: {...data, response_type: 'code'}};
 
     const authenticateHandler = {
       handle: async (request: any, response: any) => {
@@ -72,12 +71,20 @@ export class AuthController {
       },
     };
 
-    return await this.oAuth2Server.authorize(new Request(request), new Response(response), {
+    const authorizationCode = await this.oAuth2Server.authorize(new Request(request), new Response(response), {
       authenticateHandler,
       allowEmptyState: true,
       authorizationCodeLifetime: 300, // 5 minutes
     });
 
+    /*
+    * Important!!!!
+    * Bởi vì đang sử dụng authorize bằng  otp nên người dùng không cần truyền lên username/password mà vẫn  có thể lấy  được authorizationCode qua SMS.
+    * Nếu không xoá authorizationCode ở response thì hacker có thể lợi dụng api này để lúc nào cũng lấy được accessToken của user
+    * */
+    // delete authorizationCode['authorizationCode'];
+
+    return authorizationCode;
   }
 
   @post('/oauth/token')
@@ -108,6 +115,10 @@ export class AuthController {
 
   @get('/oauth/dummy-data')
   async dummyData() {
+    if (process.env.NODE_ENV && process.env.NODE_ENV.indexOf('prod') > -1) {
+      throw new HttpErrors.NotAcceptable('=)))))');
+    }
+
     const clients = [
       new OAuthClient({
                         clientId: 'application_id',
@@ -163,6 +174,10 @@ export class AuthController {
 
   @get('/oauth/dump-db')
   async dumpDb() {
+    if (process.env.NODE_ENV && process.env.NODE_ENV.indexOf('prod') > -1) {
+      throw new HttpErrors.NotAcceptable('=)))))');
+    }
+
     const userRepository   = await this.getUserRepository();
     const clientRepository = await this.getOAuthClientRepository();
     // const codeRepository   = await this.getOAuthAuthorizationCodeRepository();
