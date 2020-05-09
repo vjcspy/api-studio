@@ -10,6 +10,7 @@ import {ServiceMixin} from '@loopback/service-proxy';
 import {BaseComponent, BaseSequence, bootComponents} from '@vjcspy/g-base';
 import _ from 'lodash';
 import path from 'path';
+import {GIntSapComponent} from '@vjcspy/g-int-sap';
 import {BasicAuthUserService, JWTService, OAuth2ServerProvider} from './services';
 import {registerAuthenticationStrategy} from '@loopback/authentication';
 import {BasicAuthenticationStrategy} from './strategies';
@@ -24,6 +25,7 @@ export class GApplication extends BootMixin(
 ) {
   components = [
     BaseComponent,
+    GIntSapComponent
   ];
 
   services: [

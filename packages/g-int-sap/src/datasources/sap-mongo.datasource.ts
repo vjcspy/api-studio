@@ -1,17 +1,6 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
-
-const config = {
-  name: 'SapMongo',
-  connector: 'mongodb',
-  url: '',
-  host: 'localhost',
-  port: 27017,
-  user: '',
-  password: '',
-  database: 'sap',
-  useNewUrlParser: true
-};
+import config from './sap-mongo.datasource.config.json';
 
 // Observe application's life cycle to disconnect the datasource when
 // application is stopped. This allows the application to be shut down
@@ -20,12 +9,12 @@ const config = {
 @lifeCycleObserver('datasource')
 export class SapMongoDataSource extends juggler.DataSource
   implements LifeCycleObserver {
-  static dataSourceName = 'SapMongo';
+  static dataSourceName         = 'SapMongo';
   static readonly defaultConfig = config;
 
   constructor(
     @inject('datasources.config.SapMongo', {optional: true})
-    dsConfig: object = config,
+      dsConfig: object = config,
   ) {
     super(dsConfig);
   }

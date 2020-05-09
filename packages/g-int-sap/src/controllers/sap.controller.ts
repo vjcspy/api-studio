@@ -1,19 +1,38 @@
 // Uncomment these imports to begin using these cool features!
 
 // import {inject} from '@loopback/context';
-import {get, post, requestBody} from '@loopback/openapi-v3';
+import {Request, RestBindings, get, ResponseObject, param} from '@loopback/rest';
 import {inject} from '@loopback/core';
 import {SapMongoDataSource} from '../datasources';
 
 export class SapController {
   constructor(
-    @inject('datasources.SapMongo') dataSource: SapMongoDataSource,
+    @inject('datasources.SapMongo') protected dataSource: SapMongoDataSource,
   ) {}
 
-  @get('/sap/dump-db')
-  test(): object {
+  @get('/sap/pull')
+  test(
+    @param({
+             name: 'entity_type',
+             required: true,
+             in: 'query',
+           }) type: string,
+    @param.query.string('time', {
+      required: true,
+    }) time: number,
+    @param.query.string('currentPage', {
+      required: true,
+    }) currentPage: number,
+    @param.query.string('pageSize', {
+      required: true,
+    }) pageSize: number,
+  ): object {
     return {
-      message: 'Hello',
+      type,
+      time,
+      currentPage,
+      pageSize,
+      mongoConfig: this.dataSource.settings,
     };
   }
 }
