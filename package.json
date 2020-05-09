@@ -9,8 +9,9 @@
     "node": ">=8.9"
   },
   "scripts": {
-    "dev": "concurrently --kill-others \"yarn workspace @vjcspy/g-base build:watch\" \"yarn workspace @vjcspy/g-int-sap build:watch\" \"yarn workspace @vjcspy/g-app build:watch\" \"yarn workspace @vjcspy/g-app start:dev\"",
-    "start": "node scripts/watch-all.js",
+    "start:watch": "concurrently --kill-others \"yarn workspace @vjcspy/g-base build:watch\" \"yarn workspace @vjcspy/g-int-sap build:watch\" \"yarn workspace @vjcspy/g-app build:watch\" \"yarn workspace @vjcspy/g-app start:dev\"",
+    "dev": "node scripts/watch-all.js",
+    "start": "yarn workspace @vjcspy/g-app start",
     "migrate": "yarn workspace @vjcspy/g-app build && yarn workspace @vjcspy/g-app migrate",
     "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('Must be installed with Yarn')\""
   },
