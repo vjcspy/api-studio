@@ -18,10 +18,9 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "target": "es2017",
-    "sourceMap": true,
-    "declaration": true,
     "inlineSourceMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "declaration": true
   },
   "include": ["src"],
   "exclude": [

@@ -1,6 +1,6 @@
 import {Component, ProviderMap} from '@loopback/core';
 
-export class GSapComponent implements Component {
+export class GIntSapComponent implements Component {
   constructor() {}
 
   providers?: ProviderMap = {

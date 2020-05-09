@@ -1,7 +1,7 @@
 {
-  "name": "g-sap",
+  "name": "g-int-sap",
   "version": "1.0.0",
-  "description": "g-sap",
+  "description": "g-int-sap",
   "keywords": [
     "loopback-extension",
     "loopback"
@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "clean": "rimraf dist *.tsbuildinfo",
+    "clean": "rimraf dist *.tsbuildinfo .eslintcache",
     "pretest": "npm run clean && npm run build",
     "prepare": "npm run build",
     "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('Must be installed with Yarn')\""
