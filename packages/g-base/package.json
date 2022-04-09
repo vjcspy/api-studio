@@ -39,7 +39,7 @@
     "@loopback/core": "^2.5.0",
     "@loopback/security": "^0.2.8",
     "lodash": "^4.17.15",
-    "moment": "^2.25.3",
+    "moment": "^2.29.2",
     "tslib": "^1.10.0",
     "winston": "^3.2.1"
   },
